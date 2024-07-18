@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\penyuluhan_hukum;
-
+use Illuminate\Contracts\Support\ValidatedData;
 
 class HukumController extends Controller
 {
@@ -123,6 +123,27 @@ public function destroy(penyuluhan_hukum $penyuluhan_hukum)
     $penyuluhan_hukum->delete();
 
     return response()->json(['message' => 'Data Berhasil di Hapus'], 200);
+}
+
+public function edit_status(Request $request, $id)
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'status' => 'required',
+    ]);
+
+    // Temukan pengaduan berdasarkan ID
+    $pengaduan = penyuluhan_hukum::findOrFail($id);
+
+    // Perbarui data pengaduan dengan data yang telah divalidasi
+    $pengaduan->update($validatedData);
+
+    // Kembalikan respons berdasarkan keberhasilan pembaruan data
+    if ($pengaduan) {
+        return response()->json(['message' => 'Data pengaduan berhasil diperbarui'], 200);
+    } else {
+        return response()->json(['message' => 'Gagal memperbarui data pengaduan'], 500);
+    }
 }
 
 
